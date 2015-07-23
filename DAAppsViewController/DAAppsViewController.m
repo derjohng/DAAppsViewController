@@ -95,10 +95,12 @@
     [requestUrlString appendString:path];
     [requestUrlString appendFormat:@"&entity=software"];
     NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+    if (self.mCountryCode!=nil) countryCode = self.mCountryCode;
     if (countryCode) {
         [requestUrlString appendFormat:@"&country=%@", countryCode];
     }
     NSString *languagueCode = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+    if (self.mLanguagueCode!=nil) languagueCode = self.mLanguagueCode;
     if (languagueCode) {
         [requestUrlString appendFormat:@"&l=%@", languagueCode];
     }
@@ -143,7 +145,8 @@
                 block(NO, error);
             }
         } else {
-            NSString *userCountryCode = [[[[NSLocale preferredLanguages] objectAtIndex:0] uppercaseString] substringToIndex:2];
+            NSString *userLangCode = [[[[NSLocale preferredLanguages] objectAtIndex:0] uppercaseString] substringToIndex:2];
+            if (self.mLanguagueCode!=nil) userLangCode = self.mLanguagueCode;
             
             NSMutableArray *mutableApps = [[NSMutableArray alloc] init];
             for (NSDictionary *result in results)
@@ -162,11 +165,9 @@
                 {
                     // check language..
                     NSArray *qSupportedLang = [result objectForKey:@"languageCodesISO2A"];
-//                       NSLog(@"code:%@ langs:%@ desc:%@", userCountryCode, qSupportedLang, [result objectForKey:@"trackCensoredName"]);
-                    
                     
                     if ([qSupportedLang containsObject:@"EN"] // has en.
-                        || [qSupportedLang containsObject:userCountryCode] // match
+                        || [qSupportedLang containsObject:userLangCode] // match
                         )
                     {
                         [mutableApps addObject:appObject];
@@ -294,20 +295,20 @@
         self.didViewAppBlock(appObject.appId);
     }
     
-    if ([SKStoreProductViewController class]) {
-        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%i", (int)appObject.appId];
-        NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
-        SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
-        [productViewController setDelegate:self];
-        [productViewController loadProductWithParameters:appParameters completionBlock:nil];
-        [self presentViewController:productViewController
-                           animated:YES
-                         completion:nil];
-    } else {
+//    if ([SKStoreProductViewController class]) {
+//        NSString *itunesItemIdentifier = [NSString stringWithFormat:@"%i", (int)appObject.appId];
+//        NSDictionary *appParameters = @{SKStoreProductParameterITunesItemIdentifier: itunesItemIdentifier};
+//        SKStoreProductViewController *productViewController = [[SKStoreProductViewController alloc] init];
+//        [productViewController setDelegate:self];
+//        [productViewController loadProductWithParameters:appParameters completionBlock:nil];
+//        [self presentViewController:productViewController
+//                           animated:YES
+//                         completion:nil];
+//    } else {
         NSString *appUrlString = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%i?mt=8", (int)appObject.appId];
         NSURL *appURL = [[NSURL alloc] initWithString:appUrlString];
         [[UIApplication sharedApplication] openURL:appURL];
-    }
+//    }
 }
 
 

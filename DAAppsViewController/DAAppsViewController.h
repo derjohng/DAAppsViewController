@@ -17,6 +17,10 @@
 // If it is nil, the title will be the artist/company name or 'Results'.
 @property (nonatomic, copy) NSString *pageTitle;
 
+// 201507. 為了指定特定語系..
+@property (nonatomic, copy) NSString *mCountryCode;
+@property (nonatomic, copy) NSString *mLanguagueCode;
+
 @property (nonatomic) BOOL shouldShowIncompatibleApps;
 
 // A list of bundle ids or app ids of apps that should not be displayed.
